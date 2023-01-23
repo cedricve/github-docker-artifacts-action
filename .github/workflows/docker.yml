@@ -31,8 +31,8 @@ jobs:
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
       - name: Run Buildx
-        run: docker buildx build --platform linux/${{matrix.architecture}} -t ${{REPO}}:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --push . 
+        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --push . 
       - name: Create new and append to manifest
-        run: docker buildx imagetools create -t ${{REPO}}:$(echo $GITHUB_SHA | cut -c1-7) ${{REPO}}:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+        run: docker buildx imagetools create -t $REPO:$(echo $GITHUB_SHA | cut -c1-7) $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
       - name: Create new and append to manifest latest
-        run: docker buildx imagetools create -t ${{REPO}}:latest ${{REPO}}:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+        run: docker buildx imagetools create -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
