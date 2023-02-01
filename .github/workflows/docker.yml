@@ -38,13 +38,13 @@ jobs:
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
       - name: Run Buildx
-        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{ steps.short-sha.outputs.sha }} --push . 
+        run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}} --push . 
       - name: Create new and append to manifest
-        run: docker buildx imagetools create -t $REPO:${{ steps.short-sha.outputs.sha }} $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{ steps.short-sha.outputs.sha }}
+        run: docker buildx imagetools create --append -t $REPO:${{ steps.short-sha.outputs.sha }} $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
       - name: Create new and append to manifest latest
-        run: docker buildx imagetools create -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{ steps.short-sha.outputs.sha }}
+        run: docker buildx imagetools create --append -t $REPO:latest $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
       - name: Run Buildx with output
-        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{ steps.short-sha.outputs.sha }} --output type=tar,dest=output-${{matrix.architecture}}.tar . 
+        run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{steps.short-sha.outputs.sha}} --output type=tar,dest=output-${{matrix.architecture}}.tar . 
       - uses: rickstaa/action-create-tag@v1
         with:
           tag: ${{ steps.short-sha.outputs.sha }}
@@ -82,13 +82,13 @@ jobs:
     - name: Available platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
     - name: Run Buildx
-      run: docker buildx build --platform linux/${{matrix.architecture | tr - /}} -t $REPO:arch-${{matrix.architecture}}-${{ steps.short-sha.outputs.sha }} --push . 
+      run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}} --push . 
     - name: Create new and append to manifest
-      run: docker buildx imagetools create --append -t $REPO:${{ steps.short-sha.outputs.sha }} $REPO:arch-${{matrix.architecture}}-${{ steps.short-sha.outputs.sha }}
+      run: docker buildx imagetools create --append -t $REPO:${{ steps.short-sha.outputs.sha }} $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
     - name: Create new and append to manifest latest
-      run: docker buildx imagetools create --append -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{ steps.short-sha.outputs.sha }}
+      run: docker buildx imagetools create --append -t $REPO:latest $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
     - name: Run Buildx with output
-      run: docker buildx build --platform linux/${{matrix.architecture | tr - /}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{ steps.short-sha.outputs.sha }} --output type=tar,dest=output-${{matrix.architecture}}.tar . 
+      run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{steps.short-sha.outputs.sha}} --output type=tar,dest=output-${{matrix.architecture}}.tar . 
     - name: Create a release  
       uses: ncipollo/release-action@v1
       with:
