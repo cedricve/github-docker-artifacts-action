@@ -10,6 +10,7 @@ on:
 
 env:
   REPO: cedricvers/github-docker-artifacts-action
+  TAG: $(echo $GITHUB_SHA | cut -c1-7)
   
 jobs:
   build-amd64:
@@ -34,22 +35,22 @@ jobs:
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
       - name: Run Buildx
-        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --push . 
+        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$TAG --push . 
       - name: Create new and append to manifest
-        run: docker buildx imagetools create -t $REPO:$(echo $GITHUB_SHA | cut -c1-7) $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+        run: docker buildx imagetools create -t $REPO:$TAG $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$TAG
       - name: Create new and append to manifest latest
-        run: docker buildx imagetools create -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+        run: docker buildx imagetools create -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$TAG
       - name: Run Buildx with output
-        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output.tar . 
+        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$TAG --output type=tar,dest=output.tar . 
       - name: Create a tag  
         uses: rickstaa/action-create-tag@v1
         with:
-          tag: $(echo $GITHUB_SHA | cut -c1-7)
+          tag: $TAG
       - name: Create a release  
         uses: ncipollo/release-action@v1
         with:
-          name: $(echo $GITHUB_SHA | cut -c1-7)
-          tag: $(echo $GITHUB_SHA | cut -c1-7)
+          name: $TAG
+          tag: $TAG
           artifacts: "output.tar"
   build-other:
     runs-on: ubuntu-latest
@@ -74,8 +75,8 @@ jobs:
     - name: Available platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
     - name: Run Buildx
-      run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --push . 
+      run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$TAG --push . 
     - name: Create new and append to manifest
-      run: docker buildx imagetools create --append -t $REPO:$(echo $GITHUB_SHA | cut -c1-7) $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+      run: docker buildx imagetools create --append -t $REPO:$TAG $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$TAG
     - name: Create new and append to manifest latest
-      run: docker buildx imagetools create --append -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+      run: docker buildx imagetools create --append -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$TAG
