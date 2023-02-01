@@ -44,7 +44,7 @@ jobs:
       - name: Create new and append to manifest latest
         run: docker buildx imagetools create -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
       - name: Run Buildx with output
-        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output.tar . 
+        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output-${{matrix.architecture}}.tar . 
       - uses: rickstaa/action-create-tag@v1
         with:
           tag: ${{ steps.short-sha.outputs.sha }}
@@ -54,7 +54,7 @@ jobs:
         with:
           name: ${{ steps.short-sha.outputs.sha }}
           tag: ${{ steps.short-sha.outputs.sha }}
-          artifacts: "output.tar"
+          artifacts: "output-${{matrix.architecture}}.tar"
   build-other:
     runs-on: ubuntu-latest
     permissions:
@@ -71,6 +71,10 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Checkout
       uses: actions/checkout@v3
+    - uses: benjlevesque/short-sha@v2.1
+      id: short-sha
+      with:
+        length: 7
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
@@ -83,3 +87,13 @@ jobs:
       run: docker buildx imagetools create --append -t $REPO:$(echo $GITHUB_SHA | cut -c1-7) $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
     - name: Create new and append to manifest latest
       run: docker buildx imagetools create --append -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+    - name: Run Buildx with output
+      run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output-${{matrix.architecture}}.tar . 
+    - name: Create a release  
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        name: ${{ steps.short-sha.outputs.sha }}
+        tag: ${{ steps.short-sha.outputs.sha }}
+        artifacts: "output-${{matrix.architecture}}.tar"
+  
