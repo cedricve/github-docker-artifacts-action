@@ -8,11 +8,12 @@ on:
     branches:
       - main
 
+env:
+  REPO: cedricvers/github-docker-artifacts-action
+  
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      REPO: cedricvers/github-docker-artifacts-action
     strategy:
       matrix:
         architecture: [amd64]
