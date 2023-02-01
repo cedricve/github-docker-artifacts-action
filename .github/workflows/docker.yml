@@ -43,7 +43,7 @@ jobs:
         run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output.tar . 
       - uses: ncipollo/release-action@v1
         with:
-          tag: $(echo $GITHUB_SHA | cut -c1-7)
+          name: $(echo $GITHUB_SHA | cut -c1-7)
           artifacts: "output.tar"
   build-other:
     runs-on: ubuntu-latest
