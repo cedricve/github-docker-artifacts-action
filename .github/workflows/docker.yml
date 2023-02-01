@@ -10,7 +10,7 @@ on:
 
 env:
   REPO: cedricvers/github-docker-artifacts-action
-  TAG: ${{ echo $GITHUB_SHA | cut -c1-7 }}
+  TAG: ${{ $GITHUB_SHA | cut -c1-7 }}
   
 jobs:
   build-amd64:
