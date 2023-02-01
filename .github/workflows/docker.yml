@@ -46,7 +46,7 @@ jobs:
       - name: Run Buildx with output
         run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{steps.short-sha.outputs.sha}} --output type=tar,dest=output-${{matrix.architecture}}.tar . 
       - name: Strip binary
-        run: tar -xf output-${{matrix.architecture}}.tar && rm output-${{matrix.architecture}}.tar && tar -cf output-${{matrix.architecture}}.tar -C go/bin app
+        run: tar -xf output-${{matrix.architecture}}.tar -C output/ && rm output-${{matrix.architecture}}.tar && cd output/ && tar -cf ../output-${{matrix.architecture}}.tar -C go/bin .
       - uses: rickstaa/action-create-tag@v1
         with:
           tag: ${{ steps.short-sha.outputs.sha }}
@@ -93,7 +93,7 @@ jobs:
     - name: Run Buildx with output
       run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{steps.short-sha.outputs.sha}} --output type=tar,dest=output-${{matrix.architecture}}.tar . 
     - name: Strip binary
-      run: tar -xf output-${{matrix.architecture}}.tar && rm output-${{matrix.architecture}}.tar && tar -cf output-${{matrix.architecture}}.tar -C go/bin app
+      run: tar -xf output-${{matrix.architecture}}.tar -C output/ && rm output-${{matrix.architecture}}.tar && cd output/ && tar -cf ../output-${{matrix.architecture}}.tar -C go/bin .
     - name: Create a release  
       uses: ncipollo/release-action@v1
       with:
