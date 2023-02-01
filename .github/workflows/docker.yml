@@ -37,6 +37,12 @@ jobs:
         run: docker buildx imagetools create -t $REPO:$(echo $GITHUB_SHA | cut -c1-7) $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
       - name: Create new and append to manifest latest
         run: docker buildx imagetools create -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
+      - name: Run Buildx with output
+        run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output.tar . 
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: $(echo $GITHUB_SHA | cut -c1-7)
+          artifacts: "output.tar"
   build-other:
     runs-on: ubuntu-latest
     needs: build-amd64
