@@ -12,7 +12,7 @@ env:
   REPO: cedricvers/github-docker-artifacts-action
   
 jobs:
-  build:
+  build-amd64:
     runs-on: ubuntu-latest
     strategy:
       matrix:
