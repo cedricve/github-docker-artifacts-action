@@ -41,9 +41,15 @@ jobs:
         run: docker buildx imagetools create -t $REPO:latest $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7)
       - name: Run Buildx with output
         run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output.tar . 
-      - uses: ncipollo/release-action@v1
+      - name: Create a tag  
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: $(echo $GITHUB_SHA | cut -c1-7)
+      - name: Create a release  
+        uses: ncipollo/release-action@v1
         with:
           name: $(echo $GITHUB_SHA | cut -c1-7)
+          tag: $(echo $GITHUB_SHA | cut -c1-7)
           artifacts: "output.tar"
   build-other:
     runs-on: ubuntu-latest
