@@ -40,9 +40,9 @@ jobs:
       - name: Run Buildx
         run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}} --push . 
       - name: Create new and append to manifest
-        run: docker buildx imagetools create --append -t $REPO:${{ steps.short-sha.outputs.sha }} $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
+        run: docker buildx imagetools create -t $REPO:${{ steps.short-sha.outputs.sha }} $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
       - name: Create new and append to manifest latest
-        run: docker buildx imagetools create --append -t $REPO:latest $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
+        run: docker buildx imagetools create -t $REPO:latest $REPO:arch-${{matrix.architecture}}-${{steps.short-sha.outputs.sha}}
       - name: Run Buildx with output
         run: docker buildx build --platform linux/$(echo ${{matrix.architecture}} | tr - /) -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-${{steps.short-sha.outputs.sha}} --output type=tar,dest=output-${{matrix.architecture}}.tar . 
       - uses: rickstaa/action-create-tag@v1
