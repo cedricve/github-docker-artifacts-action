@@ -43,13 +43,13 @@ jobs:
         run: docker buildx build --platform linux/${{matrix.architecture}} -t $REPO:arch-$(echo ${{matrix.architecture}} | tr / -)-$(echo $GITHUB_SHA | cut -c1-7) --output type=tar,dest=output.tar . 
       - uses: rickstaa/action-create-tag@v1
         with:
-          tag: ${{ github.ref }}
-          message: "Release ${{ github.ref }}"
+          tag: ${{ github.sha | cut -c1-7 }}
+          message: "Release ${{ github.sha | cut -c1-7 }}"
       - name: Create a release  
         uses: ncipollo/release-action@v1
         with:
-          name: ${{ github.ref }}
-          tag: ${{ github.ref }}
+          name: ${{ github.sha | cut -c1-7 }}
+          tag: ${{ github.sha | cut -c1-7 }}
           artifacts: "output.tar"
   build-other:
     runs-on: ubuntu-latest
